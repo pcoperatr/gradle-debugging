@@ -1,2 +1,2 @@
 # Gradle Debugging Plugin
-Gradle plugin to for extended debug functionality 
+Gradle plugin for extended debug functionality
