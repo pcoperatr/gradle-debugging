@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'ivy-publish'
+    id 'com.gradle.plugin-publish' version '0.9.10'
+}
+
+group 'de.lukaskoerfer.gradle'
+version '0.1'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+}
+
+pluginBundle {
+    vcsUrl = 'https://github.com/lukoerfer/gradle-debugging'
+    plugins {
+        plugin {
+            id = 'de.lukaskoerfer.gradle'
+            displayName = 'Debugging Plugin'
+            description = 'Adds support for extended debugging options'
+            tags = ['debugging', 'debugging', 'remote', 'plugin']
+        }
+    }
+}
+
+publishing {
+    publications {
+        plugin(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+wrapper {
+    gradleVersion '4.5'
+}
