@@ -37,6 +37,10 @@ publishing {
     }
 }
 
+javadoc {
+    destinationDir = file('docs/javadoc')
+}
+
 wrapper {
     gradleVersion '4.5'
 }
