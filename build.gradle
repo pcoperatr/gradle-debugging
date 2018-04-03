@@ -17,13 +17,14 @@ dependencies {
 }
 
 pluginBundle {
+    website = 'https://github.com/lukoerfer/gradle-debugging'
     vcsUrl = 'https://github.com/lukoerfer/gradle-debugging'
     plugins {
         plugin {
-            id = 'de.lukaskoerfer.gradle'
+            id = 'de.lukaskoerfer.gradle.debugging'
             displayName = 'Debugging Plugin'
             description = 'Adds support for extended debugging options'
-            tags = ['debugging', 'debugging', 'remote', 'plugin']
+            tags = ['debugging', 'debug', 'remote', 'plugin']
         }
     }
 }
