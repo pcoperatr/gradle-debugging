@@ -22,16 +22,26 @@ import static de.lukaskoerfer.gradle.debugging.DebuggingPlugin.*;
 public class Debug extends DefaultTask {
     
     /**
-     * Gets or sets the debug specification that describes how the target task should be debugged
+     * -- GETTER --
+     * Gets the debug specification that describes how the target task should be debugged
      * <br><br>
-     * The properties of this debug specification are directly available from the task.
+     * <b>Please note:</b> The properties of this debug specification are directly available from the task (via convention).
+     * @return A debug specification
+     * -- SETTER --
+     * Sets the debug specification that describes how the target task should be debugged
+     * @param debugSpec A debug specification
      */
     @Getter @Setter
     private DebugSpec debugSpec = getConvention()
         .create(DEBUG_SPECIFICATION_ID, DebugSpec.class);
     
     /**
-     * Gets or sets the target task to debug
+     * -- GETTER --
+     * Gets the target task to debug
+     * @return The current target task, may be null if not set yet
+     * -- SETTER --
+     * Sets the target task to debug
+     * @param target Any task that implements {@link JavaForkOptions}
      */
     @Getter @Setter
     private JavaForkOptions target;

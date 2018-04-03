@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'ivy-publish'
+    id 'io.franzbecker.gradle-lombok' version '1.11'
     id 'com.gradle.plugin-publish' version '0.9.10'
 }
 
@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    compileOnly 'org.projectlombok:lombok:1.16.18'
 }
 
 pluginBundle {
@@ -36,6 +35,9 @@ publishing {
         }
     }
 }
+
+project.ext.Delombok = io.franzbecker.gradle.lombok.task.DelombokTask
+apply from: 'gradle/lombok.gradle'
 
 javadoc {
     destinationDir = file('docs/javadoc')

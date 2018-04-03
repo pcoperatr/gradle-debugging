@@ -17,16 +17,20 @@ public class DebugConfiguration extends DebugSpec implements Named {
     
     /**
      * Gets the name of this configuration
+     * @return A string
      */
     @Getter
     private final String name;
     
     /**
-     * Gets or sets the debug task name generation pattern for this configuration
-     * <br><br>
-     * Defaults to the pattern <i>configName</i>Debug<i>taskName</i>
+     * -- GETTER --
+     * Gets the debug task name generation pattern for this configuration
+     * @return An operator that takes a task name string and returns a Debug task name string
      * -- SETTER --
-     * Changing the pattern may lead to confusion because it may be used for task name generation before the change takes effect!
+     * Sets the debug task name generation pattern for this configuration
+     * <br><br>
+     * <b>Warning:</b> Changing the pattern may lead to confusion because the old pattern may have been used for task name generation before the change took effect!
+     * @param pattern An operator that takes a task name string and returns a Debug task name string
      */
     @Getter @Setter
     private UnaryOperator<String> pattern =

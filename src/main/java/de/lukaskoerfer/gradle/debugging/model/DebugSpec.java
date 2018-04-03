@@ -20,33 +20,56 @@ public class DebugSpec {
     private static final String NO = "n";
     
     /**
-     * Gets or sets the used debug transport method
+     * -- GETTER --
+     * Gets the used debug transport method
+     * @return The used transport method
+     * -- SETTER --
+     * Sets the used debug transport method
+     * @param transport A transport method (or string with a fitting name)
      */
     @Getter @Setter
     private TransportMethod transport = TransportMethod.dt_socket;
     
     /**
-     * Gets or sets the address to connect for debugging
-     * <br><br>
-     * You may use any object that provides the address string via its toString method, e.g. an Integer for a simple port
+     * -- GETTER --
+     * Gets the address to connect for debugging
+     * @return Any object
+     * -- SETTER --
+     * Sets the address to connect for debugging
+     * @param address Any object that provides the address string via its <code>toString()</code> method, e.g. an Integer for a simple port
      */
     @Getter @Setter
     private Object address = 5050;
     
     /**
-     * Gets or sets whether the JVM process should act as server in this debug session
+     * -- GETTER --
+     * Gets whether the JVM process should act as server in this debug session
+     * @return True if the process should act as server, false otherwise
+     * -- SETTER --
+     * Sets whether the JVM process should act as server in this debug session
+     * @param server True if the process should act as server, false otherwise
      */
     @Getter @Setter
     private boolean server = false;
     
     /**
-     * Gets or sets whether the JVM process should suspend until a debug connection is established
+     * -- GETTER --
+     * Gets whether the JVM process should suspend until a debug connection is established
+     * @return True if the process should suspend, false otherwise
+     * -- SETTER --
+     * Sets whether the JVM process should suspend until a debug connection is established
+     * @param suspend True if the process should suspend, false otherwise
      */
     @Getter @Setter
     private boolean suspend = true;
     
     /**
-     * Gets or sets whether the old flags -Xdebug and -Xrunjdwp should be used (Java < 5.0)
+     * -- GETTER --
+     * Gets whether the old flags <var>-Xdebug</var> and <var>-Xrunjdwp</var> should be used (before Java 5.0)
+     * @return True if the old flags should be used, false otherwise
+     * -- SETTER --
+     * Sets whether the old flags <var>-Xdebug</var> and <var>-Xrunjdwp</var> should be used (before Java 5.0)
+     * @param useXFlags True if the old flags should be used, false otherwise
      */
     @Getter @Setter
     private boolean useXFlags = false;
@@ -62,7 +85,7 @@ public class DebugSpec {
     
     /**
      * Packs this debug specifications into JVM arguments
-     * @return A list of JVM arguments
+     * @return A list of JVM argument strings
      */
     public List<String> getJvmArgs() {
         String options = getOptions().entrySet().stream()
