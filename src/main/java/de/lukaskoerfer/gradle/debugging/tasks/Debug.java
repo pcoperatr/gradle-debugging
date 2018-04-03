@@ -24,7 +24,7 @@ public class Debug extends DefaultTask {
     /**
      * Gets or sets the debug specification that describes how the target task should be debugged
      * <br><br>
-     * The properties of this debug specification are directly available to the task.
+     * The properties of this debug specification are directly available from the task.
      */
     @Getter @Setter
     private DebugSpec debugSpec = getConvention()
