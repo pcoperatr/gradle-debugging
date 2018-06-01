@@ -1,5 +1,6 @@
 package de.lukaskoerfer.gradle.debugging.model;
 
+import de.lukaskoerfer.gradle.debugging.DebuggingPlugin;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,18 +23,8 @@ public class DebugConfiguration extends DebugSpec implements Named {
     @Getter
     private final String name;
     
-    /**
-     * -- GETTER --
-     * Gets the debug task name generation pattern for this configuration
-     * @return An operator that takes a task name string and returns a Debug task name string
-     * -- SETTER --
-     * Sets the debug task name generation pattern for this configuration
-     * <br><br>
-     * <b>Warning:</b> Changing the pattern may lead to confusion because the old pattern may have been used for task name generation before the change took effect!
-     * @param pattern An operator that takes a task name string and returns a Debug task name string
-     */
-    @Getter @Setter
-    private UnaryOperator<String> pattern =
-        taskName -> getName() + "Debug" + capitalize((CharSequence) taskName);
+    public String getPrefix() {
+        return name.equals(DebuggingPlugin.DEFAULT_DEBUG_CONFIGURATION) ? "debug" : name + "Debug";
+    }
 
 }
