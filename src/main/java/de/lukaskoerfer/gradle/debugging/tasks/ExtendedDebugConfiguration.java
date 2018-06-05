@@ -16,7 +16,7 @@ public class ExtendedDebugConfiguration {
     
     /**
      * Adds JVM parameters for debugging according to the specification configured by the given action to the task
-     * @param specAction An action with a debug specification as parameter
+     * @param specAction An action to configure a debug specification.
      */
     public void debug(Action<DebugSpec> specAction) {
         DebugSpec spec = new DebugSpec();
@@ -26,7 +26,7 @@ public class ExtendedDebugConfiguration {
     
     /**
      * Adds JVM parameters for debugging according to the specification configured by the given closure to the task
-     * @param specAction A closure with a debug specification as both delegate and single parameter
+     * @param specAction A closure to configure a debug specification. The specification will be passed as both single parameter and delegate to the closure.
      */
     public void debug(Closure specAction) {
         DebugSpec spec = new DebugSpec();
