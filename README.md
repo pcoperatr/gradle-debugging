@@ -31,9 +31,9 @@ By default, Gradle provides a `debug` property for all task types that implement
         }
     }
 
-#### Single configuration task
+#### Debug configuration task
 
-#### Automatic configuration tasks
+#### Global debug configurations
 
 
 
