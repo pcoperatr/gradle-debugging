@@ -1,12 +1,12 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'io.franzbecker.gradle-lombok' version '1.11'
     id 'com.gradle.plugin-publish' version '0.9.10'
+	id 'de.lukaskoerfer.gradle.delombok' version '0.2'
 }
 
 group 'de.lukaskoerfer.gradle'
-version '0.1'
+version '0.2'
 
 repositories {
     jcenter()
@@ -14,6 +14,14 @@ repositories {
 
 dependencies {
     compile gradleApi()
+	compileOnly 'org.projectlombok:lombok:1.18.2'
+}
+
+javadoc {
+	source = delombok
+	options.links 'https://docs.oracle.com/javase/8/docs/api/',
+        'https://docs.gradle.org/current/javadoc/'
+    destinationDir = file('docs/javadoc')
 }
 
 pluginBundle {
@@ -37,13 +45,6 @@ publishing {
     }
 }
 
-project.ext.Delombok = io.franzbecker.gradle.lombok.task.DelombokTask
-apply from: 'gradle/lombok.gradle'
-
-javadoc {
-    destinationDir = file('docs/javadoc')
-}
-
 wrapper {
-    gradleVersion '4.5'
+    gradleVersion '4.9'
 }

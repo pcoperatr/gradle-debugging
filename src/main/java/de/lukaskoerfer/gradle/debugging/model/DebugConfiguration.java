@@ -3,12 +3,7 @@ package de.lukaskoerfer.gradle.debugging.model;
 import de.lukaskoerfer.gradle.debugging.DebuggingPlugin;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.gradle.api.Named;
-
-import java.util.function.UnaryOperator;
-
-import static org.codehaus.groovy.runtime.StringGroovyMethods.capitalize;
 
 /**
  * Describes a named configuration on how to debug a JVM processes
@@ -18,11 +13,15 @@ public class DebugConfiguration extends DebugSpec implements Named {
     
     /**
      * Gets the name of this configuration
-     * @return A string
+     * @return A unique identifier
      */
     @Getter
     private final String name;
     
+    /**
+     * Gets the prefix to use for task names that are debugged with this configuration
+     * @return A task name prefix
+     */
     public String getPrefix() {
         return name.equals(DebuggingPlugin.DEFAULT_DEBUG_CONFIGURATION) ? "debug" : name + "Debug";
     }

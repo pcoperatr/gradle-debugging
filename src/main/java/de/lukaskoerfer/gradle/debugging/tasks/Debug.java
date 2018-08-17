@@ -3,37 +3,21 @@ package de.lukaskoerfer.gradle.debugging.tasks;
 import de.lukaskoerfer.gradle.debugging.model.DebugSpec;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Delegate;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.JavaForkOptions;
 
 import java.io.IOException;
 
-import static de.lukaskoerfer.gradle.debugging.DebuggingPlugin.*;
-
 /**
  * Applies debug settings to a target task (that implements {@link JavaForkOptions}) on execution
- * <br><br>
- * Using a task with this type enables conditional debugging based on task execution.
+ * <p>Using a task with this type enables conditional debugging based on task execution.
  * Executing only the target task will not activate debugging.
  * Only calling a {@link Debug} task will add the debug specific JVM arguments to the target task.
- * For each target task, the last associated {@link Debug} task executed will overwrite all others.
+ * For each target task, the last associated {@link Debug} task executed will overwrite all others.</p>
  */
 public class Debug extends DefaultTask {
-    
-    /**
-     * -- GETTER --
-     * Gets the debug specification that describes how the target task should be debugged
-     * <br><br>
-     * <b>Please note:</b> The properties of this debug specification are directly available from the task (via convention).
-     * @return A debug specification
-     * -- SETTER --
-     * Sets the debug specification that describes how the target task should be debugged
-     * @param debugSpec A debug specification
-     */
-    @Getter @Setter
-    private DebugSpec debugSpec = getConvention()
-        .create(DEBUG_SPECIFICATION_ID, DebugSpec.class);
     
     /**
      * -- GETTER --
@@ -46,6 +30,9 @@ public class Debug extends DefaultTask {
     @Getter @Setter
     private JavaForkOptions target;
     
+    @Delegate
+    private final DebugSpec debugSpec = new DebugSpec();
+    
     /**
      * Creates a new debug task
      */
@@ -54,7 +41,7 @@ public class Debug extends DefaultTask {
     }
     
     @TaskAction
-    private void run() throws IOException {
+    private void setupDebug() throws IOException {
         target.jvmArgs(debugSpec.getJvmArgs());
     }
 

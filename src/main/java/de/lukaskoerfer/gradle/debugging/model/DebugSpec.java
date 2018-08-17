@@ -74,17 +74,20 @@ public class DebugSpec {
     @Getter @Setter
     private boolean useXFlags = false;
     
-    private Map<String, String> getOptions() {
-        Map<String, String> options = new HashMap<>();
-        options.put(TRANSPORT_OPTION, transport.name());
-        options.put(ADDRESS_OPTION, address.toString());
-        options.put(SERVER_OPTION, server ? YES : NO);
-        options.put(SUSPEND_OPTION, suspend ? YES : NO);
-        return options;
+    /**
+     * Copies all settings from a given specification
+     * @param otherSpec Another debug specification
+     */
+    public void copyFrom(DebugSpec otherSpec) {
+        this.transport = otherSpec.transport;
+        this.address = otherSpec.address;
+        this.server = otherSpec.server;
+        this.suspend = otherSpec.suspend;
+        this.useXFlags = otherSpec.useXFlags;
     }
     
     /**
-     * Packs this debug specifications into JVM arguments
+     * Packs this debug specification into JVM arguments
      * @return A list of JVM argument strings
      */
     public List<String> getJvmArgs() {
@@ -96,6 +99,15 @@ public class DebugSpec {
         } else {
             return Collections.singletonList("-agentlib:jdwp=" + options);
         }
+    }
+    
+    private Map<String, String> getOptions() {
+        Map<String, String> options = new LinkedHashMap<>(4);
+        options.put(TRANSPORT_OPTION, transport.name());
+        options.put(ADDRESS_OPTION, address.toString());
+        options.put(SERVER_OPTION, server ? YES : NO);
+        options.put(SUSPEND_OPTION, suspend ? YES : NO);
+        return options;
     }
     
 }
