@@ -3,7 +3,7 @@ Gradle plugin for extended debug functionality
 
 ## Motivation
 The Gradle API for (remote) debugging Gradle `JavaExec` tasks or tests is very limited.
-You either need to stick to a specific debug configuration or apply the JVM arguments on your own.
+You either need to stick to a specific debug configuration or apply the JVM arguments on your own (via `jvmArgs` method).
 This plugin adds the possibility to define debug parameters in the same declarative style as everything else in your build script:
 
     address = 5050    // or '127.0.0.1:5050'
