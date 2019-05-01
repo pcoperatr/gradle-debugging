@@ -32,7 +32,7 @@ The Gradle debugging plugin adds a method with the same name that takes a closur
         }
     }
 
-### Task type `Debug`
+#### Task type `Debug`
 Sometimes, it is not necessary or favoured to debug a task in every Gradle build.
 As an example, tests could automatically connect to a debugger when executed on a local machine, but run without that debug configuration on a build server:
 
@@ -46,7 +46,7 @@ As an example, tests could automatically connect to a debugger when executed on 
 Now, when debugging on the local machine, one can invoke `gradle debugTest`.
 The behavior when calling `gradle check` or `gradle build` will remain unchanged. 
 
-### Automatic generation of `Debug` tasks
+#### Automatic generation of `Debug` tasks
 Gradle prefers a declarative way to write build scripts instead of creating task manually like in the previous example.
 The Gradle debugging plugin provides a container for debug configurations.
 For each element in the container, a task of the type `Debug` will be created for each task that implements `JavaForkOptions`:
