@@ -21,8 +21,8 @@ The plugin is available via the [Gradle plugin portal](https://plugins.gradle.or
 The plugin provides three different ways to use its extended debug features in a Gradle build:
 
 #### Direct task configuration
-By default, Gradle provides a `debug` property for all task types that implements `JavaForkOptions` (e.g. `JavaExec` and `Test`).
-The Gradle debugging plugin adds a method with the same name that takes a closure to configure how to debug the task:
+By default, Gradle provides a simple boolean property called `debug` for all task types that implement `JavaForkOptions` (e.g. `JavaExec` and `Test`).
+This plugin additionally registers a method with the same name that takes a closure to configure how to debug the task:
 
     test {
         debug {
