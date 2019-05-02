@@ -3,12 +3,7 @@ Gradle plugin for extended debug functionality
 
 ## Motivation
 The Gradle API for (remote) debugging Gradle `JavaExec` tasks or tests is very limited.
-You either need to stick to a specific debug configuration or apply the JVM arguments on your own (via `jvmArgs` method).
-This plugin adds the possibility to define debug parameters in the same declarative style as everything else in your build script:
-
-    address = 5050    // or '127.0.0.1:5050'
-    server = false
-    suspend = true
+You either need to stick to a specific debug configuration (via `debug = true`) or apply the JVM arguments on your own (via `jvmArgs`). This plugin adds the possibility to define debug parameters in the same declarative style as everything else in your build script.
 
 ## Download
 The plugin is available via the [Gradle plugin portal](https://plugins.gradle.org/plugin/de.lukaskoerfer.gradle.debugging). Simply add it to the `plugins` block of your build script:
@@ -43,8 +38,8 @@ As an example, tests could automatically connect to a debugger when executed on 
         suspend = true
     }
     
-Now, when debugging on the local machine, one can invoke `gradle debugTest`.
-The behavior when calling `gradle check` or `gradle build` will remain unchanged. 
+Now, to debug the test execution on your local machine, simply invoke `gradle debugTest`.
+The behavior when calling `gradle test` will remain unchanged. This may be important for build servers or other environments, that simply call `gradle build` or `gradle check`.
 
 #### Automatic generation of `Debug` tasks
 Gradle prefers a declarative way to write build scripts instead of creating task manually like in the previous example.
