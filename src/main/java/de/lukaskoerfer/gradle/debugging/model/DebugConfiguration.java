@@ -9,7 +9,7 @@ import org.gradle.api.Named;
  * Describes a named configuration on how to debug a JVM processes
  */
 @RequiredArgsConstructor
-public class DebugConfiguration extends DebugSpec implements Named {
+public class DebugConfiguration extends DebugSpecification implements Named {
     
     /**
      * Gets the name of this configuration

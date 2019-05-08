@@ -1,20 +1,20 @@
 plugins {
-    id 'java'
+    id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.9.10'
+    id 'com.gradle.plugin-publish' version '0.10.1'
 	id 'de.lukaskoerfer.gradle.delombok' version '0.2'
 }
 
 group 'de.lukaskoerfer.gradle'
-version '0.2'
+version '0.3'
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    compile gradleApi()
 	compileOnly 'org.projectlombok:lombok:1.18.2'
+    annotationProcessor 'org.projectlombok:lombok:1.18.2'
 }
 
 javadoc {
@@ -37,14 +37,6 @@ pluginBundle {
     }
 }
 
-publishing {
-    publications {
-        plugin(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
 wrapper {
-    gradleVersion '4.9'
+    gradleVersion '5.4.1'
 }

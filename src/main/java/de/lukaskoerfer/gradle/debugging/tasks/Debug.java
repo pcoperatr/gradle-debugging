@@ -1,6 +1,6 @@
 package de.lukaskoerfer.gradle.debugging.tasks;
 
-import de.lukaskoerfer.gradle.debugging.model.DebugSpec;
+import de.lukaskoerfer.gradle.debugging.model.DebugSpecification;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
@@ -31,18 +31,20 @@ public class Debug extends DefaultTask {
     private JavaForkOptions target;
     
     @Delegate
-    private final DebugSpec debugSpec = new DebugSpec();
+    private final DebugSpecification spec = new DebugSpecification();
     
     /**
      * Creates a new debug task
      */
     public Debug() {
-        getProject().afterEvaluate(project -> finalizedBy(target));
+        getProject().afterEvaluate(project -> {
+            finalizedBy(target);
+        });
     }
     
     @TaskAction
-    private void setupDebug() throws IOException {
-        target.jvmArgs(debugSpec.getJvmArgs());
+    private void setupDebugForTarget() throws IOException {
+        target.jvmArgs(spec.getJvmArgs());
     }
 
 }

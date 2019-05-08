@@ -9,12 +9,14 @@ import java.util.stream.Collectors;
 /**
  * Describes how to debug JVM processes
  */
-public class DebugSpec {
+public class DebugSpecification {
     
-    private static final String TRANSPORT_OPTION = "transport";
-    private static final String ADDRESS_OPTION = "address";
-    private static final String SERVER_OPTION = "server";
-    private static final String SUSPEND_OPTION = "suspend";
+    private static final String TRANSPORT_PARAMETER = "transport";
+    private static final String ADDRESS_PARAMETER = "address";
+    private static final String SERVER_PARAMETER = "server";
+    private static final String SUSPEND_PARAMETER = "suspend";
+
+    private static final String XFLAGS_OPTION = "xflags";
     
     private static final String YES = "y";
     private static final String NO = "n";
@@ -33,13 +35,13 @@ public class DebugSpec {
     /**
      * -- GETTER --
      * Gets the address to connect for debugging
-     * @return Any object
+     * @return Any object, defaults to null
      * -- SETTER --
      * Sets the address to connect for debugging
      * @param address Any object that provides the address string via its <code>toString()</code> method, e.g. an Integer for a simple port
      */
     @Getter @Setter
-    private Object address = 5050;
+    private Object address = null;
     
     /**
      * -- GETTER --
@@ -61,52 +63,82 @@ public class DebugSpec {
      * @param suspend True if the process should suspend, false otherwise
      */
     @Getter @Setter
-    private boolean suspend = true;
-    
+    private boolean suspend = false;
+
     /**
      * -- GETTER --
      * Gets whether the old flags <var>-Xdebug</var> and <var>-Xrunjdwp</var> should be used (before Java 5.0)
      * @return True if the old flags should be used, false otherwise
      * -- SETTER --
      * Sets whether the old flags <var>-Xdebug</var> and <var>-Xrunjdwp</var> should be used (before Java 5.0)
-     * @param useXFlags True if the old flags should be used, false otherwise
+     * @param xflags True if the old flags should be used, false otherwise
      */
     @Getter @Setter
-    private boolean useXFlags = false;
-    
+    private boolean xflags = false;
+
+    /**
+     *
+     * @return
+     */
+    public boolean isConfigured() {
+        return address != null;
+    }
+
     /**
      * Copies all settings from a given specification
-     * @param otherSpec Another debug specification
+     * @param specification Another debug specification
      */
-    public void copyFrom(DebugSpec otherSpec) {
-        this.transport = otherSpec.transport;
-        this.address = otherSpec.address;
-        this.server = otherSpec.server;
-        this.suspend = otherSpec.suspend;
-        this.useXFlags = otherSpec.useXFlags;
+    public void inheritFrom(DebugSpecification specification) {
+        transport = specification.transport;
+        address = specification.address;
+        server = specification.server;
+        suspend = specification.suspend;
+        xflags = specification.xflags;
     }
-    
+
+    /**
+     *
+     * @param settings
+     */
+    public void apply(Map<String, Object> settings) {
+        Optional.ofNullable(settings.get(TRANSPORT_PARAMETER)).ifPresent(value -> {
+            transport = TransportMethod.valueOf((String) value);
+        });
+        Optional.ofNullable(settings.get(ADDRESS_PARAMETER)).ifPresent(value -> {
+            address = value;
+        });
+        Optional.ofNullable(settings.get(SERVER_PARAMETER)).ifPresent(value -> {
+            server = (boolean) value;
+        });
+        Optional.ofNullable(settings.get(SUSPEND_PARAMETER)).ifPresent(value -> {
+            suspend = (boolean) value;
+        });
+        Optional.ofNullable(settings.get(XFLAGS_OPTION)).ifPresent(value -> {
+            xflags = (boolean) value;
+        });
+    }
+
     /**
      * Packs this debug specification into JVM arguments
      * @return A list of JVM argument strings
      */
     public List<String> getJvmArgs() {
-        String options = getOptions().entrySet().stream()
+        String options = getParameters().entrySet().stream()
             .map(option -> String.join("=", option.getKey(), option.getValue()))
             .collect(Collectors.joining(","));
-        if (useXFlags) {
+        if (xflags) {
             return Arrays.asList("-Xdebug", "-Xrunjdwp:" + options);
         } else {
             return Collections.singletonList("-agentlib:jdwp=" + options);
         }
     }
     
-    private Map<String, String> getOptions() {
+    private Map<String, String> getParameters() {
         Map<String, String> options = new LinkedHashMap<>(4);
-        options.put(TRANSPORT_OPTION, transport.name());
-        options.put(ADDRESS_OPTION, address.toString());
-        options.put(SERVER_OPTION, server ? YES : NO);
-        options.put(SUSPEND_OPTION, suspend ? YES : NO);
+        options.put(TRANSPORT_PARAMETER, transport.name());
+        options.put(ADDRESS_PARAMETER, address.toString());
+        options.put(SERVER_PARAMETER, server ? YES : NO);
+        options.put(SUSPEND_PARAMETER, suspend ? YES : NO);
         return options;
     }
     
