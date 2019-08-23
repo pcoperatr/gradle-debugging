@@ -68,6 +68,7 @@ public class DebuggingPlugin implements Plugin<Project> {
     }
     
     private void setupDebugExtension(Task task) {
+
         DebugSpecification spec = task.getExtensions().create(DEBUG_EXTENSION, DebugSpecification.class);
         task.getProject().afterEvaluate(project -> {
             if (spec.isConfigured()) {

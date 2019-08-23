@@ -21,14 +21,13 @@ javadoc {
 	source = delombok
 	options.links 'https://docs.oracle.com/javase/8/docs/api/',
         'https://docs.gradle.org/current/javadoc/'
-    destinationDir = file('docs/javadoc')
 }
 
 pluginBundle {
     website = 'https://github.com/lukoerfer/gradle-debugging'
     vcsUrl = 'https://github.com/lukoerfer/gradle-debugging'
     plugins {
-        plugin {
+        main {
             id = 'de.lukaskoerfer.gradle.debugging'
             displayName = 'Debugging Plugin'
             description = 'Adds support for extended debugging options'
@@ -38,5 +37,5 @@ pluginBundle {
 }
 
 wrapper {
-    gradleVersion '5.4.1'
+    gradleVersion '5.6'
 }
