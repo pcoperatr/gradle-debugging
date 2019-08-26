@@ -1,9 +1,8 @@
 package de.lukaskoerfer.gradle.debugging;
 
 import de.lukaskoerfer.gradle.debugging.model.DebugConfiguration;
-import de.lukaskoerfer.gradle.debugging.model.DebugSpecification;
 import de.lukaskoerfer.gradle.debugging.tasks.Debug;
-import de.lukaskoerfer.gradle.debugging.util.StringUtil;
+import org.codehaus.groovy.runtime.StringGroovyMethods;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -57,25 +56,21 @@ public class DebuggingPlugin implements Plugin<Project> {
     public void apply(Project project) {
         // Register task type Debug
         project.getExtensions().getExtraProperties().set(Debug.class.getSimpleName(), Debug.class);
+
         // Register the debug extension to debuggable tasks
+        // TODO: Check for version < 5.6
         TaskCollection<Task> debuggableTasks = project.getTasks().matching(JavaForkOptions.class::isInstance);
-        debuggableTasks.all(this::setupDebugExtension);
+        debuggableTasks.all(this::registerLegacyConvention);
+
         // Setup declarative debugging container
         NamedDomainObjectContainer<DebugConfiguration> container =
-            project.container(DebugConfiguration.class);
+            project.container(DebugConfiguration.class, name -> new DebugConfiguration(name, project));
         container.all(configuration -> setupDebugConfiguration(project, configuration));
         project.getExtensions().add(DEBUG_CONFIGURATION_CONTAINER, container);
     }
     
-    private void setupDebugExtension(Task task) {
-
-        DebugSpecification spec = task.getExtensions().create(DEBUG_EXTENSION, DebugSpecification.class);
-        task.getProject().afterEvaluate(project -> {
-            if (spec.isConfigured()) {
-                JavaForkOptions target = (JavaForkOptions) task;
-                target.jvmArgs(spec.getJvmArgs());
-            }
-        });
+    private void registerLegacyConvention(Task task) {
+        // TODO
     }
     
     private void setupDebugConfiguration(Project project, DebugConfiguration configuration) {
@@ -98,7 +93,7 @@ public class DebuggingPlugin implements Plugin<Project> {
         String prefix = configuration.getPrefix();
         project.getTasks().addRule("Pattern: " + prefix + "<DebuggableTask>", name -> {
             if (name.startsWith(prefix)) {
-                String targetName = StringUtil.uncapitalize(name.substring(prefix.length()));
+                String targetName = uncapitalize(name.substring(prefix.length()));
                 Task target = debuggableTasks.findByName(targetName);
                 if (target != null) {
                     createDebugTask(project, target, configuration);
@@ -108,14 +103,22 @@ public class DebuggingPlugin implements Plugin<Project> {
     }
     
     private void createDebugTask(Project project, Task target, DebugConfiguration configuration) {
-        String name = configuration.getPrefix() + StringUtil.capitalize(target.getName());
+        String name = configuration.getPrefix() + capitalize(target.getName());
         Debug task = project.getTasks().create(name, Debug.class);
         task.setGroup(DEBUGGING_TASK_GROUP);
         task.setDescription(String.format(DEBUGGING_TASK_DESCRIPTION, target.getName(), configuration.getName()));
-        task.setTarget((JavaForkOptions) target);
-        task.inheritFrom(configuration);
+        task.getTarget().set((JavaForkOptions) target);
+        task.getPort().convention(configuration.getPort());
+        task.getServer().convention(configuration.getServer());
+        task.getSuspend().convention(configuration.getSuspend());
     }
-    
 
+    private static String capitalize(String value) {
+        return StringGroovyMethods.capitalize((CharSequence)value);
+    }
+
+    private static String uncapitalize(String value) {
+        return StringGroovyMethods.uncapitalize(value);
+    }
     
 }
