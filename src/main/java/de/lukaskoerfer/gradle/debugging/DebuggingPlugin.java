@@ -1,8 +1,7 @@
 package de.lukaskoerfer.gradle.debugging;
 
-import de.lukaskoerfer.gradle.debugging.model.DebugConfiguration;
-import de.lukaskoerfer.gradle.debugging.tasks.Debug;
-import org.codehaus.groovy.runtime.StringGroovyMethods;
+import static org.codehaus.groovy.runtime.StringGroovyMethods.capitalize;
+import static org.codehaus.groovy.runtime.StringGroovyMethods.uncapitalize;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -11,42 +10,26 @@ import org.gradle.api.tasks.TaskCollection;
 import org.gradle.process.JavaForkOptions;
 
 /**
- * A {@link Plugin} that provides extended debugging functionality.
- * <p>
- * Applying this plugin will do the following:
- * <ul>
- * <li>Register extensions to tasks that implement {@link JavaForkOptions} add customized debug JVM options on each task that implements {@link JavaForkOptions}</li>
- * <li>Register a container for debugging configurations. Each configuration will create a {@link Debug} task for each task that implements {@link JavaForkOptions}</li>
- * <li>Add a main configuration to the container mentioned above</li>
- * </ul>
+ * Provides a {@link Plugin} that provides extended debugging functionality
  */
 public class DebuggingPlugin implements Plugin<Project> {
 
     /**
-     *
-     */
-    public static final String DEBUG_EXTENSION = "debugging";
-    /**
-     *
+     * Defines the name of the debug configuration container
      */
     public static final String DEBUG_CONFIGURATION_CONTAINER = "debugging";
     /**
-     *
+     * Defines the name of the default debug configuration
      */
     public static final String DEFAULT_DEBUG_CONFIGURATION = "main";
     /**
-     * Defines the property string used as a flag whether to use task rules for debugging tasks
+     * Defines the group for tasks created by debug configurations
      */
-    public static final String DEBUGGING_RULES_OPTION = "de.lukaskoerfer.gradle.debugging.rules";
-
-    /**
-     * Defines the group for tasks created by the debugging container
-     */
-    private static final String DEBUGGING_TASK_GROUP = "Debugging";
+    private static final String DEBUGGING_TASK_GROUP = "Debug";
     /**
      * Defines the description template for tasks created by the debugging container
      */
-    private static final String DEBUGGING_TASK_DESCRIPTION = "Debugs task '%s' in configuration '%s'";
+    private static final String DEBUGGING_TASK_DESCRIPTION = "Debugs task '%s' using debug configuration '%s'";
 
     /**
      * Applies the debugging plugin to a project
@@ -54,41 +37,15 @@ public class DebuggingPlugin implements Plugin<Project> {
      */
     @Override
     public void apply(Project project) {
-        // Register task type Debug
-        project.getExtensions().getExtraProperties().set(Debug.class.getSimpleName(), Debug.class);
-
-        // Register the debug extension to debuggable tasks
-        // TODO: Check for version < 5.6
-        TaskCollection<Task> debuggableTasks = project.getTasks().matching(JavaForkOptions.class::isInstance);
-        debuggableTasks.all(this::registerLegacyConvention);
-
-        // Setup declarative debugging container
         NamedDomainObjectContainer<DebugConfiguration> container =
             project.container(DebugConfiguration.class, name -> new DebugConfiguration(name, project));
         container.all(configuration -> setupDebugConfiguration(project, configuration));
+        container.create(DEFAULT_DEBUG_CONFIGURATION);
         project.getExtensions().add(DEBUG_CONFIGURATION_CONTAINER, container);
     }
     
-    private void registerLegacyConvention(Task task) {
-        // TODO
-    }
-    
     private void setupDebugConfiguration(Project project, DebugConfiguration configuration) {
-        if (project.hasProperty(DEBUGGING_RULES_OPTION)) {
-            createDebugRule(project, configuration);
-        } else {
-            createDebugTasks(project, configuration);
-        }
-    }
-    
-    private void createDebugTasks(Project project, DebugConfiguration configuration) {
-        TaskCollection<Task> debuggableTasks = project.getTasks().matching(JavaForkOptions.class::isInstance);
-        debuggableTasks.all(target -> {
-            createDebugTask(project, target, configuration);
-        });
-    }
-    
-    private void createDebugRule(Project project, DebugConfiguration configuration) {
+        project.getLogger().debug("");
         TaskCollection<Task> debuggableTasks = project.getTasks().matching(JavaForkOptions.class::isInstance);
         String prefix = configuration.getPrefix();
         project.getTasks().addRule("Pattern: " + prefix + "<DebuggableTask>", name -> {
@@ -97,28 +54,24 @@ public class DebuggingPlugin implements Plugin<Project> {
                 Task target = debuggableTasks.findByName(targetName);
                 if (target != null) {
                     createDebugTask(project, target, configuration);
+                } else {
+                    project.getLogger().warn("");
                 }
             }
         });
     }
     
     private void createDebugTask(Project project, Task target, DebugConfiguration configuration) {
-        String name = configuration.getPrefix() + capitalize(target.getName());
+        project.getLogger().debug("");
+        String name = configuration.getPrefix() + capitalize((CharSequence) target.getName());
         Debug task = project.getTasks().create(name, Debug.class);
         task.setGroup(DEBUGGING_TASK_GROUP);
         task.setDescription(String.format(DEBUGGING_TASK_DESCRIPTION, target.getName(), configuration.getName()));
         task.getTarget().set((JavaForkOptions) target);
-        task.getPort().convention(configuration.getPort());
-        task.getServer().convention(configuration.getServer());
-        task.getSuspend().convention(configuration.getSuspend());
+        task.getPort().set(configuration.getPort());
+        task.getServer().set(configuration.getServer());
+        task.getSuspend().set(configuration.getSuspend());
     }
 
-    private static String capitalize(String value) {
-        return StringGroovyMethods.capitalize((CharSequence)value);
-    }
-
-    private static String uncapitalize(String value) {
-        return StringGroovyMethods.uncapitalize(value);
-    }
     
 }

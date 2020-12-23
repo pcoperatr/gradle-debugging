@@ -1,41 +1,60 @@
 plugins {
     id 'java-gradle-plugin'
-    id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.10.1'
-	id 'de.lukaskoerfer.gradle.delombok' version '0.2'
+    id 'groovy'
+    id 'io.freefair.lombok' version '5.1.0'
+    id 'com.gradle.plugin-publish' version '0.12.0'
 }
 
 group 'de.lukaskoerfer.gradle'
-version '0.3'
+version '0.3.0'
+description 'Adds support for extended debugging options'
 
 repositories {
     jcenter()
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.2'
-    annotationProcessor 'org.projectlombok:lombok:1.18.2'
+    testImplementation localGroovy()
+    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5', {
+        exclude group: 'org.codehaus.groovy'
+    }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+    lombok.version = '1.18.12'
+    generateLombokConfig.enabled = false
+}
+
+test {
+    useJUnit()
 }
 
 javadoc {
-	source = delombok
 	options.links 'https://docs.oracle.com/javase/8/docs/api/',
         'https://docs.gradle.org/current/javadoc/'
+    options.addStringOption 'Xdoclint:none', '-quiet'
+    options.addBooleanOption 'html5', true
+}
+
+gradlePlugin {
+    plugins {
+        plugin {
+            id = 'de.lukaskoerfer.gradle.debugging'
+            implementationClass = 'de.lukaskoerfer.gradle.debugging.DebuggingPlugin'
+        }
+    }
 }
 
 pluginBundle {
     website = 'https://github.com/lukoerfer/gradle-debugging'
     vcsUrl = 'https://github.com/lukoerfer/gradle-debugging'
     plugins {
-        main {
-            id = 'de.lukaskoerfer.gradle.debugging'
+        plugin {
             displayName = 'Debugging Plugin'
-            description = 'Adds support for extended debugging options'
+            description = project.description
             tags = ['debugging', 'debug', 'remote', 'plugin']
         }
     }
-}
-
-wrapper {
-    gradleVersion '5.6'
 }
