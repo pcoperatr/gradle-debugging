@@ -1,23 +1,20 @@
 package de.lukaskoerfer.gradle.debugging;
 
-import de.lukaskoerfer.gradle.debugging.DebuggingPlugin;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
-import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.Property;
-import org.gradle.process.JavaDebugOptions;
 
 import java.util.Map;
 import java.util.Optional;
+import javax.inject.Inject;
+import org.gradle.process.JavaDebugOptions;
 
 /**
  * Describes a configuration on how to debug JVM processes
  */
 @SuppressWarnings("UnstableApiUsage")
-public class DebugConfiguration implements Named {
-    
+public abstract class DebugConfiguration implements Named, JavaDebugOptions {
+
     /**
      * Gets the name of this configuration
      * @return The unique configuration name
@@ -26,36 +23,18 @@ public class DebugConfiguration implements Named {
     private final String name;
 
     /**
-     * Gets the property to define the
-     */
-    @Getter
-    private final Property<Integer> port;
-
-    /**
-     *
-     */
-    @Getter
-    private final Property<Boolean> server;
-
-    /**
-     *
-     */
-    @Getter
-    private final Property<Boolean> suspend;
-
-    /**
      * Creates a new debug configuration
      * @param name A unique name
      * @param project The project instance
      */
+    @Inject
     public DebugConfiguration(String name, Project project) {
         this.name = name;
-        port = project.getObjects()
-            .property(Integer.class).convention(5005);
-        server = project.getObjects()
-            .property(Boolean.class).convention(true);
-        suspend = project.getObjects()
-            .property(Boolean.class).convention(true);
+        getEnabled().convention(true);
+        getPort().convention(5005);
+        getHost().convention("localhost");
+        getServer().convention(true);
+        getSuspend().convention(true);
     }
 
     /**
@@ -65,13 +44,16 @@ public class DebugConfiguration implements Named {
     public void at(Map<String, Object> options) {
         Optional.ofNullable(options.get("port"))
             .map(Integer.class::cast)
-            .ifPresent(port::set);
+            .ifPresent(port -> getPort().set(port));
+        Optional.ofNullable(options.get("host"))
+            .map(String.class::cast)
+            .ifPresent(host -> getHost().set(host));
         Optional.ofNullable(options.get("server"))
             .map(Boolean.class::cast)
-            .ifPresent(server::set);
+            .ifPresent(server -> getServer().set(server));
         Optional.ofNullable(options.get("suspend"))
             .map(Boolean.class::cast)
-            .ifPresent(server::set);
+            .ifPresent(suspend -> getSuspend().set(suspend));
     }
 
     /**
@@ -81,5 +63,4 @@ public class DebugConfiguration implements Named {
     public String getPrefix() {
         return name.equals(DebuggingPlugin.DEFAULT_DEBUG_CONFIGURATION) ? "debug" : name + "Debug";
     }
-
 }

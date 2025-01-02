@@ -38,12 +38,12 @@ public class DebuggingPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         NamedDomainObjectContainer<DebugConfiguration> container =
-            project.container(DebugConfiguration.class, name -> new DebugConfiguration(name, project));
+            project.container(DebugConfiguration.class, name -> project.getObjects().newInstance(DebugConfiguration.class, name, project));
         container.all(configuration -> setupDebugConfiguration(project, configuration));
         container.create(DEFAULT_DEBUG_CONFIGURATION);
         project.getExtensions().add(DEBUG_CONFIGURATION_CONTAINER, container);
     }
-    
+
     private void setupDebugConfiguration(Project project, DebugConfiguration configuration) {
         project.getLogger().debug("");
         TaskCollection<Task> debuggableTasks = project.getTasks().matching(JavaForkOptions.class::isInstance);
@@ -60,18 +60,15 @@ public class DebuggingPlugin implements Plugin<Project> {
             }
         });
     }
-    
-    private void createDebugTask(Project project, Task target, DebugConfiguration configuration) {
-        project.getLogger().debug("");
-        String name = configuration.getPrefix() + capitalize((CharSequence) target.getName());
-        Debug task = project.getTasks().create(name, Debug.class);
-        task.setGroup(DEBUGGING_TASK_GROUP);
-        task.setDescription(String.format(DEBUGGING_TASK_DESCRIPTION, target.getName(), configuration.getName()));
-        task.getTarget().set((JavaForkOptions) target);
-        task.getPort().set(configuration.getPort());
-        task.getServer().set(configuration.getServer());
-        task.getSuspend().set(configuration.getSuspend());
-    }
 
-    
+    private void createDebugTask(Project project, Task target, DebugConfiguration configuration) {
+        String name = configuration.getPrefix() + capitalize((CharSequence) target.getName());
+        project.getTasks().register(name, Debug.class, task -> {
+            task.setGroup(DEBUGGING_TASK_GROUP);
+            task.setDescription(String.format(DEBUGGING_TASK_DESCRIPTION, target.getName(), configuration.getName()));
+            task.getTarget().set((JavaForkOptions) target);
+            task.finalizedBy(target);
+            task.getDebugOptions().set(configuration);
+        });
+    }
 }
