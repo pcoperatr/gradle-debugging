@@ -1,6 +1,5 @@
 package de.lukaskoerfer.gradle.debugging;
 
-import lombok.Getter;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
 
@@ -15,11 +14,6 @@ import org.gradle.process.JavaDebugOptions;
 @SuppressWarnings("UnstableApiUsage")
 public abstract class DebugConfiguration implements Named, JavaDebugOptions {
 
-    /**
-     * Gets the name of this configuration
-     * @return The unique configuration name
-     */
-    @Getter
     private final String name;
 
     /**
@@ -35,6 +29,15 @@ public abstract class DebugConfiguration implements Named, JavaDebugOptions {
         getHost().convention("localhost");
         getServer().convention(true);
         getSuspend().convention(true);
+    }
+
+    /**
+     * Gets the name of this configuration
+     * @return The unique configuration name
+     */
+    @Override
+    public String getName() {
+        return name;
     }
 
     /**

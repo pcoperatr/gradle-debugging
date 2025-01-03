@@ -27,7 +27,7 @@ public abstract class Debug extends DefaultTask {
     @TaskAction
     protected void applyDebugConfiguration() {
         JavaForkOptions task = getTarget().get();
-        final var from = getDebugOptions().get();
+        JavaDebugOptions from = getDebugOptions().get();
         task.debugOptions(options -> {
             options.getEnabled().set(from.getEnabled());
             options.getPort().set(from.getPort());
