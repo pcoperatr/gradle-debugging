@@ -10,7 +10,7 @@ version '0.3.0'
 description 'Adds support for extended debugging options'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
